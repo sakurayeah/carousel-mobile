@@ -1,0 +1,32 @@
+<div class="
+  caroursel-mobile-wrap
+  <%if(wrapCls){%> <%=wrapCls%> <%}%>
+  "
+>
+  <div class="caroursel-mobile-content">
+    <% childrens.forEach(function(item, index){ %>
+      <div class="
+        caroursel-mobile-list 
+        <%if(horizontal){%>caroursel-mobile-horizontal<%}%>"
+      >
+        <%=item%>
+      </div>
+    <%})%>
+  </div>
+  <div class="caroursel-mobile-trigger 
+    <%if(horizontal){%>
+      trigger-horizontal
+    <%}else{%>
+      trigger-vertical
+    <%}%>"
+    <%if(!trigger){%> style="display:none;" <%}%>
+  >
+    <% for(var i=0; i< status; i=1+i) { %>
+      <div class="
+          caroursel-mobile-status 
+          <%=triggerCls%> 
+          <%if(curIndex === i){%> <%=activeTriggerCls%> <%}%>"
+      ></div>
+    <%}%>
+  </div>
+</div>
