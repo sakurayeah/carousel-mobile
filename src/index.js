@@ -10,7 +10,7 @@ export default class Carousel {
       childrens = [], // 轮播内容数组
       autoplay = false, // 是否自动播放
       interval = 2000, // 轮播时间
-      duration = 500, // 动画持续时间
+      duration = 200, // 动画持续时间
       curIndex = 0, // 默认起始页
       trigger = false, // 是否有触发器
       hasTrigger = true, // 触发器是否有点击事件
@@ -83,7 +83,7 @@ export default class Carousel {
     // 获取dom元素
     this.panel = this.element.find('.caroursel-mobile-content');
     this.triggers = this.element.find('.caroursel-mobile-status');
-    
+
     // 赋值
     this.steps = panelsW; // 步长，每次滑动的距离
     if (!this.horizontal) {
@@ -105,7 +105,7 @@ export default class Carousel {
         '-webkit-transform': `translate3d(0,${this.place - this.curIndex * panelsH}px,0)`
       })
     }
-    
+
     this.element.find('.caroursel-mobile-wrap').height(panelsH);
     this.element.find('.caroursel-mobile-list').width(panelsW);
   }
@@ -163,7 +163,7 @@ export default class Carousel {
 
     let mCoord; // 移动时的坐标
     this._movestart = true;
-    
+
     e.preventDefault();
     this._stop();
 
@@ -181,11 +181,11 @@ export default class Carousel {
       if (distance < -this.turnDistance) {
         e.preventDefault();
         this._next();
-      // 上一页
+        // 上一页
       } else if (distance > this.turnDistance) {
         e.preventDefault();
         this._prev();
-      // 留在本页
+        // 留在本页
       } else {
         this._setCoord(this.place - this.curIndex * this.steps);
       }
@@ -219,7 +219,7 @@ export default class Carousel {
     }
 
     this.curIndex = this.curIndex - 1; // 当前页面
-    
+
     if (this.curIndex < 0) {
       this.curIndex = -1;
     }
@@ -246,37 +246,32 @@ export default class Carousel {
     const value = duration || this.duration;
     this._setDuration(value);
     this._setCoord(scrollx);
-    
+
     // 从最后一页到第一页
     if (curIndex === this._childrensLen) {
-      this.curIndex = 0;
-      clearTimeout(this.slideToForwardTime);
-      this.slideToForwardTime = setTimeout(() => {
-        this._setDuration(0);
-        this._setCoord(this.place)
-      }, this.duration)
+      curIndex = 0;
     }
 
     // 从第一页到最后一页
     if (curIndex === -1) {
-      this.curIndex = this._childrensLen - 1;
-      clearTimeout(this.slideToBackwardTime);
-      this.slideToBackwardTime = setTimeout(() => {
-        this._setDuration(0);
-        this._setCoord(this.place - this.curIndex * this.steps)
-      }, this.duration)
+      curIndex = this._childrensLen - 1
     }
 
     // 更新触控器
-    this.triggers.removeClass(this.activeTriggerCls);
-    this.triggers.eq(this.curIndex).addClass(this.activeTriggerCls);
+    this._updateTriggers(curIndex);
 
     // 回调函数
     if (this.callback) {
-      this.callback(this.curIndex);
+      this.callback(curIndex);
     }
 
     this._begin();
+  }
+
+  // 更新控制器
+  _updateTriggers(current) {
+    this.triggers.removeClass(this.activeTriggerCls);
+    this.triggers.eq(current).addClass(this.activeTriggerCls);
   }
 
   // 设置 translateX 值
@@ -295,7 +290,19 @@ export default class Carousel {
 
   // 动画结束
   _transitionEnd = () => {
-    console.log('transitionEnd')
+    // 从最后一页到第一页
+    if (this.curIndex === this._childrensLen) {
+      this.curIndex = 0;
+      this._setDuration(0);
+      this._setCoord(this.place)
+    }
+
+    // 从第一页到最后一页
+    if (this.curIndex === -1) {
+      this.curIndex = this._childrensLen - 1;
+      this._setDuration(0);
+      this._setCoord(this.place - this.curIndex * this.steps)
+    }
   }
 
 }
